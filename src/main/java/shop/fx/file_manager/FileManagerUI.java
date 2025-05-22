@@ -2,11 +2,7 @@ package shop.fx.file_manager;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -42,8 +38,9 @@ public class FileManagerUI {
         driveListView = new ListView<>();
         driveListView.getStyleClass().add("drive-list-view");
 
+
         // Load header logo
-        Image headerLogoImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/back.png")));
+        Image headerLogoImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/logo_64.png")));
         if (headerLogoImage.isError()) {
             System.err.println("Failed to load header_logo.png");
         }
@@ -95,11 +92,11 @@ public class FileManagerUI {
         pathField = new TextField();
         pathField.getStyleClass().add("path-field");
         pathField.setEditable(false);
-        pathField.setPromptText("Select a drive or folder");
+        pathField.setPromptText("Home");
 
         searchField = new TextField();
         searchField.getStyleClass().add("search-field");
-        searchField.setPromptText("Search in current folder");
+        searchField.setPromptText("Search...");
 
         Label drivesLabel = new Label("Drives");
         drivesLabel.getStyleClass().add("drives-label");
@@ -166,9 +163,10 @@ public class FileManagerUI {
 
         // Group back and forward buttons in an HBox with no spacing
         HBox navGroup = new HBox(0, backButton, forwardButton);
+        navGroup.setAlignment(Pos.CENTER);
 
         // Second row with home button, navigation group, and path field
-        HBox bottomRow = new HBox(10, homeButton, navGroup, pathField);
+        HBox bottomRow = new HBox(10, homeButton, navGroup, pathField, new Region());
         bottomRow.getStyleClass().add("header-row");
         bottomRow.setAlignment(Pos.CENTER);
         bottomRow.setMinHeight(30);

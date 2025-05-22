@@ -1,5 +1,4 @@
 package shop.fx.file_manager;
-import atlantafx.base.theme.PrimerDark;
 import com.catwithawand.borderlessscenefx.scene.BorderlessScene;
 import javafx.application.Application;
 import javafx.scene.paint.Color;
@@ -14,7 +13,7 @@ public class FileManager extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Set the theme
-//        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+//        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
         // Initialize UI and controller
         FileManagerUI ui = new FileManagerUI();

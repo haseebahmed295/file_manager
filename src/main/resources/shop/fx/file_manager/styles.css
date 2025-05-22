@@ -98,7 +98,7 @@
 /* Path field styling */
 .path-field {
     -fx-background-color: #141414;
-    -fx-text-fill: #cecece;
+    -fx-text-fill: #e7e7e7;
     -fx-font-size: 14px;
     -fx-padding: 4 20 4 10;
     -fx-background-radius: 5;
@@ -137,7 +137,7 @@
 /* File name styling */
 .file-name {
     -fx-font-size: 14px;
-    -fx-text-fill: #e0e0e0;
+    -fx-text-fill: #aaaaaa;
     -fx-min-width: 200px;
     -fx-alignment: center-left;
 }
@@ -247,6 +247,13 @@
 .file-list-view .list-cell:empty {
     -fx-background-color: transparent;
 }
+.file-list-view .scroll-bar:vertical,
+.file-list-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
 
 /* Drive grid styling for home view */
 .drive-grid {
@@ -255,12 +262,14 @@
     -fx-padding: 10;
     -fx-hgap: 10;
     -fx-vgap: 10;
+
 }
 
 /* Drive cell styling for home view */
 .drive-cell {
     -fx-background-color: transparent;
     -fx-padding: 10;
+
     -fx-alignment: center-left;
 }
 
@@ -268,6 +277,7 @@
 .drive-cell:hover {
     -fx-background-color: rgba(100, 100, 100, 0.5);
     -fx-cursor: hand;
+    -fx-background-radius: 10;
 }
 
 /* Drive cell content (GridPane) for home view */

@@ -14,8 +14,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FileManagerController {
 
@@ -32,7 +34,6 @@ public class FileManagerController {
         this.fileSystemUtils = fileSystemUtils;
         this.navigationHistory = new ArrayList<>();
         this.historyIndex = -1;
-        // Load maximize and restore icons
         maximizeImage = new Image(getClass().getResourceAsStream("icons/maximize_64.png"));
         restoreImage = new Image(getClass().getResourceAsStream("icons/restore_64.png"));
         if (maximizeImage.isError() || restoreImage.isError()) {
@@ -44,13 +45,11 @@ public class FileManagerController {
     }
 
     private void setupEventHandlers() {
-        // Minimize button
         ui.getMinimizeButton().setOnAction(e -> {
             Stage stage = (Stage) ui.getRoot().getScene().getWindow();
             stage.setIconified(true);
         });
 
-        // Maximize button
         ui.getMaximizeButton().setOnAction(e -> {
             Stage stage = (Stage) ui.getRoot().getScene().getWindow();
             stage.setMaximized(!stage.isMaximized());
@@ -58,17 +57,14 @@ public class FileManagerController {
             icon.setImage(stage.isMaximized() ? restoreImage : maximizeImage);
         });
 
-        // Close button
         ui.getCloseButton().setOnAction(e -> Platform.exit());
 
-        // Home button
         ui.getHomeButton().setOnAction(e -> {
             loadDrives();
             navigationHistory.clear();
             historyIndex = -1;
         });
 
-        // Back button
         ui.getBackButton().setOnAction(event -> {
             if (historyIndex > 0) {
                 historyIndex--;
@@ -82,7 +78,6 @@ public class FileManagerController {
             }
         });
 
-        // Forward button
         ui.getForwardButton().setOnAction(event -> {
             if (historyIndex < navigationHistory.size() - 1) {
                 historyIndex++;
@@ -94,7 +89,6 @@ public class FileManagerController {
             }
         });
 
-        // File list double-click to navigate folders
         ui.getFileListView().setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Path selectedPath = ui.getFileListView().getSelectionModel().getSelectedItem();
@@ -127,7 +121,6 @@ public class FileManagerController {
             }
         });
 
-        // Drive selection from sidebar (single-click)
         ui.getDriveListView().setOnMouseClicked(event -> {
             DriveInfo selectedDrive = ui.getDriveListView().getSelectionModel().getSelectedItem();
             if (selectedDrive != null) {
@@ -156,7 +149,6 @@ public class FileManagerController {
             }
         });
 
-        // Drive selection from home view grid (single-click)
         ui.getMainContent().setOnMouseClicked(event -> {
             if (ui.getMainContent().getChildren().get(1) instanceof GridPane) {
                 Node target = event.getPickResult().getIntersectedNode();
@@ -195,7 +187,6 @@ public class FileManagerController {
             }
         });
 
-        // Search field
         ui.getSearchField().textProperty().addListener((obs, oldValue, newValue) -> {
             if (currentPath != null) {
                 try {
@@ -209,7 +200,6 @@ public class FileManagerController {
     }
 
     private void setupCellFactories() {
-        // File list cell factory (with icon, name, size, and extension columns)
         ui.getFileListView().setCellFactory(param -> new ListCell<>() {
             private final ImageView icon = new ImageView();
             private final Label name = new Label();
@@ -218,27 +208,24 @@ public class FileManagerController {
             private final GridPane content = new GridPane();
 
             {
-                // Define column constraints
-                ColumnConstraints iconCol = new ColumnConstraints(24); // Fixed for icon
+                ColumnConstraints iconCol = new ColumnConstraints(24);
                 iconCol.setHalignment(HPos.LEFT);
                 ColumnConstraints nameCol = new ColumnConstraints();
-                nameCol.setHgrow(Priority.ALWAYS); // Flexible width
+                nameCol.setHgrow(Priority.ALWAYS);
                 nameCol.setHalignment(HPos.LEFT);
-                ColumnConstraints sizeCol = new ColumnConstraints(100); // Fixed for size
+                ColumnConstraints sizeCol = new ColumnConstraints(100);
                 sizeCol.setHalignment(HPos.RIGHT);
-                ColumnConstraints extCol = new ColumnConstraints(60); // Fixed for extension
+                ColumnConstraints extCol = new ColumnConstraints(60);
                 extCol.setHalignment(HPos.CENTER);
                 content.getColumnConstraints().addAll(iconCol, nameCol, sizeCol, extCol);
                 content.setHgap(10);
                 content.setAlignment(Pos.CENTER_LEFT);
 
-                // Add nodes to grid
                 content.add(icon, 0, 0);
                 content.add(name, 1, 0);
                 content.add(sizeInfo, 2, 0);
                 content.add(extensionInfo, 3, 0);
 
-                // Style nodes
                 icon.getStyleClass().add("file-icon");
                 icon.setFitHeight(16);
                 icon.setPreserveRatio(true);
@@ -260,42 +247,65 @@ public class FileManagerController {
                     setStyle("");
                 } else {
                     String fileName = item.getFileName() != null ? item.getFileName().toString() : item.toString();
+                    boolean isDirectory = false;
                     try {
-                        String extension = "";
-                        if (Files.isDirectory(item)) {
-                            Image folderImage = new Image(getClass().getResourceAsStream("icons/folder_64.png"));
+                        BasicFileAttributes attrs = Files.readAttributes(item, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+                        isDirectory = attrs.isDirectory();
+                        System.out.println("Path: " + item + ", isDirectory: " + isDirectory);
+                    } catch (AccessDeniedException e) {
+                        System.err.println("Access denied checking attributes for: " + item);
+                    } catch (IOException e) {
+                        System.err.println("IOException checking attributes for: " + item + ", Message: " + e.getMessage());
+                    }
+
+                    try {
+                        String extension = "-";
+                        if (isDirectory) {
+                            Image folderImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/folder_64.png")));
                             if (folderImage.isError()) {
                                 System.err.println("Failed to load folder_64.png");
                             }
                             icon.setImage(folderImage);
                             name.setText(fileName);
                             sizeInfo.setText("-");
-                            extension = "-";
                         } else {
-                            Image fileImage = new Image(getClass().getResourceAsStream("icons/file_64.png"));
+                            Image fileImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/file_64.png")));
                             if (fileImage.isError()) {
                                 System.err.println("Failed to load file_64.png");
                             }
                             icon.setImage(fileImage);
                             name.setText(fileName);
-                            long size = Files.size(item);
-                            sizeInfo.setText(fileSystemUtils.formatSize(size));
+                            try {
+                                long size = Files.size(item);
+                                sizeInfo.setText(fileSystemUtils.formatSize(size));
+                            } catch (AccessDeniedException e) {
+                                sizeInfo.setText("(Access Denied)");
+                            }
                             int dotIndex = fileName.lastIndexOf('.');
                             if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
                                 extension = fileName.substring(dotIndex + 1).toLowerCase();
-                            } else {
-                                extension = "-";
                             }
                         }
                         extensionInfo.setText(extension);
-                    } catch (Exception e) {
-                        Image lockedImage = new Image(getClass().getResourceAsStream("icons/lock_64.png"));
+                    } catch (AccessDeniedException e) {
+                        System.err.println("Access denied for: " + item);
+                        Image lockedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/lock_64.png")));
                         if (lockedImage.isError()) {
                             System.err.println("Failed to load lock_64.png");
                         }
                         icon.setImage(lockedImage);
                         name.setText(fileName);
                         sizeInfo.setText("(Access Denied)");
+                        extensionInfo.setText("-");
+                    } catch (IOException e) {
+                        System.err.println("IOException for: " + item + ", Message: " + e.getMessage());
+                        Image lockedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/lock_64.png")));
+                        if (lockedImage.isError()) {
+                            System.err.println("Failed to load lock_64.png");
+                        }
+                        icon.setImage(lockedImage);
+                        name.setText(fileName);
+                        sizeInfo.setText("(Error)");
                         extensionInfo.setText("-");
                     }
 
@@ -315,7 +325,6 @@ public class FileManagerController {
             }
         });
 
-        // Drive list cell factory (with custom icon on left, vertical title and progress bar)
         ui.getDriveListView().setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(DriveInfo item, boolean empty) {
@@ -327,18 +336,16 @@ public class FileManagerController {
                     GridPane cellContent = new GridPane();
                     cellContent.getStyleClass().add("drive-cell-content");
 
-                    // Drive icon
                     ImageView driveIcon = new ImageView();
                     driveIcon.getStyleClass().add("drive-icon");
                     driveIcon.setFitHeight(16);
                     driveIcon.setPreserveRatio(true);
-                    Image driveImage = new Image(getClass().getResourceAsStream("icons/hdd_64.png"));
+                    Image driveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/hdd_64.png")));
                     if (driveImage.isError()) {
                         System.err.println("Failed to load hdd_64.png");
                     }
                     driveIcon.setImage(driveImage);
 
-                    // Vertical arrangement of drive name and progress bar
                     VBox textAndProgress = new VBox(8);
                     Label driveName = new Label(item.getDisplayName());
                     driveName.getStyleClass().add("drive-name");
@@ -359,7 +366,6 @@ public class FileManagerController {
                         progressBar.setProgress(0);
                     }
 
-                    // Define column constraints
                     ColumnConstraints iconCol = new ColumnConstraints(24);
                     iconCol.setHalignment(HPos.LEFT);
                     ColumnConstraints textCol = new ColumnConstraints();
@@ -396,7 +402,7 @@ public class FileManagerController {
             ui.getPathField().setText(directory.toString());
             ui.getSearchField().setText("");
         } catch (AccessDeniedException e) {
-            throw e; // Propagate AccessDeniedException
+            throw e;
         }
     }
 }

@@ -6,7 +6,7 @@
     -fx-max-width: 400;
     -fx-border-color: transparent;
     -fx-border-width: 1 0 0 1;
-    -fx-padding: 10 0 0 10;
+    -fx-padding: 10 15 0 15;
     -fx-background-radius: 8 0 0 8;
 }
 .sidebar .scroll-bar {
@@ -17,48 +17,45 @@
 .drives-label {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-fill: #e0e0e0;
-    -fx-padding: 10 0 10 0;
+    -fx-text-fill: #f7f7f7;
+    -fx-padding: 10 0 -5 0;
 }
 
 /* Drive list view styling */
 .drive-list-view {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-fit-to-width: true;
+    -fx-padding: 0 0 0 0;
     -fx-hbar-policy: never;
 }
 
 /* Drive list cell styling */
 .drive-list-view .list-cell {
-    -fx-padding: 10;
+    -fx-padding: 10 0 0 0;
     -fx-background-color: transparent;
     -fx-max-width: 180;
     -fx-effect: none;
 }
 
-/* Drive list cell hover effect */
-.drive-list-view .list-cell:filled:hover {
-    -fx-background-color: rgba(100, 100, 100, 0.5);
-    -fx-cursor: hand;
-}
-
-/* Drive list cell selected effect */
-.drive-list-view .list-cell:filled:selected {
-    -fx-background-color: rgba(150, 150, 150, 0.5);
-}
-
 /* Drive cell content (HBox) */
 .drive-list-view .drive-cell-content {
     -fx-padding: 5;
+    -fx-background-color: transparent;
+    -fx-background-radius: 5;
     -fx-max-width: 180;
+    -fx-border-width: 2;
     -fx-alignment: center-left;
+}
+.drive-list-view .drive-cell-content:hover {
+    -fx-background-color: rgba(79, 78, 78, 0.5);
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
 }
 
 /* Drive name styling */
 .drive-list-view .drive-name {
     -fx-font-size: 14px;
-    -fx-fill: #b0b0b0;
+    -fx-fill: #606060;
     -fx-max-width: 150; /* Adjusted to fit within cell */
     -fx-wrap-text: true; /* Enable text wrapping */
 }
@@ -77,7 +74,18 @@
     -fx-max-width: 160;
     -fx-background-insets: 0;
 }
-
+.search-field{
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #cecece;
+    -fx-font-size: 14px;
+    -fx-padding: 4 20 4 10;
+    -fx-background-radius: 5;
+    -fx-border-color: #3d3d3d;
+    -fx-border-width: .5;
+    -fx-border-radius: 5;
+    -fx-prompt-text-fill: #666666;
+    -fx-pref-height: 32;
+}
 /* Progress bar filled portion */
 .drive-progress .bar {
     -fx-pref-height: 5px;
