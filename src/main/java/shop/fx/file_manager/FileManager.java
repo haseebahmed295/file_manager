@@ -1,0 +1,45 @@
+package shop.fx.file_manager;
+import atlantafx.base.theme.PrimerDark;
+import com.catwithawand.borderlessscenefx.scene.BorderlessScene;
+import javafx.application.Application;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import javax.swing.filechooser.FileSystemView;
+import java.io.File;
+
+public class FileManager extends Application {
+
+    @Override
+    public void start(Stage primaryStage) {
+        // Set the theme
+//        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+
+        // Initialize UI and controller
+        FileManagerUI ui = new FileManagerUI();
+        FileSystemUtils fileSystemUtils = new FileSystemUtils();
+        FileManagerController controller = new FileManagerController(ui, fileSystemUtils);
+
+        // Set up the scene
+        BorderlessScene scene = new BorderlessScene(primaryStage, StageStyle.TRANSPARENT, ui.getRoot(), Color.TRANSPARENT);
+        scene.setMoveControl(ui.getHeader());
+        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("sidebar.css").toExternalForm());
+
+        // Configure and show the stage
+        primaryStage.setTitle("File Manager");
+        primaryStage.setMinWidth(400);
+        primaryStage.setWidth(1000); // Set initial width to 1000
+        primaryStage.setHeight(600); // Set initial height to 600
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        // Load initial data
+        controller.loadDrives();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}

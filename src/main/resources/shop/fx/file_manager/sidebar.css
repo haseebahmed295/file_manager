@@ -1,0 +1,94 @@
+/* Sidebar styling */
+.sidebar {
+    -fx-background-color: #303030;
+    -fx-min-width: 150;
+    -fx-pref-width: 200;
+    -fx-max-width: 400;
+    -fx-border-color: transparent;
+    -fx-border-width: 1 0 0 1;
+    -fx-padding: 10 0 0 10;
+    -fx-background-radius: 8 0 0 8;
+}
+.sidebar .scroll-bar {
+    -fx-opacity: 0;
+}
+
+/* Drives label styling */
+.drives-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0e0;
+    -fx-padding: 10 0 10 0;
+}
+
+/* Drive list view styling */
+.drive-list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-fit-to-width: true;
+    -fx-hbar-policy: never;
+}
+
+/* Drive list cell styling */
+.drive-list-view .list-cell {
+    -fx-padding: 10;
+    -fx-background-color: transparent;
+    -fx-max-width: 180;
+    -fx-effect: none;
+}
+
+/* Drive list cell hover effect */
+.drive-list-view .list-cell:filled:hover {
+    -fx-background-color: rgba(100, 100, 100, 0.5);
+    -fx-cursor: hand;
+}
+
+/* Drive list cell selected effect */
+.drive-list-view .list-cell:filled:selected {
+    -fx-background-color: rgba(150, 150, 150, 0.5);
+}
+
+/* Drive cell content (HBox) */
+.drive-list-view .drive-cell-content {
+    -fx-padding: 5;
+    -fx-max-width: 180;
+    -fx-alignment: center-left;
+}
+
+/* Drive name styling */
+.drive-list-view .drive-name {
+    -fx-font-size: 14px;
+    -fx-fill: #b0b0b0;
+    -fx-max-width: 150; /* Adjusted to fit within cell */
+    -fx-wrap-text: true; /* Enable text wrapping */
+}
+
+/* Drive icon styling */
+.drive-list-view .drive-icon {
+    -fx-fit-to-height: 16px !important;
+    -fx-preserve-ratio: true;
+    -fx-max-width: 16px;
+}
+
+/* Drive progress bar styling */
+.drive-progress {
+    -fx-pref-height: 5px;
+    -fx-accent: #aaaaaa;
+    -fx-max-width: 160;
+    -fx-background-insets: 0;
+}
+
+/* Progress bar filled portion */
+.drive-progress .bar {
+    -fx-pref-height: 5px;
+    -fx-background-insets: 0;
+    -fx-background-radius: 3px;
+}
+
+/* Progress bar background track */
+.drive-progress .track {
+    -fx-pref-height: 5px;
+    -fx-background-color: #454545;
+    -fx-background-insets: 0;
+    -fx-background-radius: 3px;
+}
