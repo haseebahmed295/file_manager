@@ -183,6 +183,7 @@
 
 .window-button:hover {
     -fx-background-color: #262626;
+
 }
 
 .window-button:pressed {
@@ -191,6 +192,9 @@
 
 .close-button {
     -fx-background-color: transparent;
+}
+.close-button:hover {
+    -fx-background-radius: 0 8 0 0;
 }
 
 .minimize-button {

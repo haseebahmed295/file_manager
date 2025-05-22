@@ -1,12 +1,14 @@
 package shop.fx.file_manager;
 import com.catwithawand.borderlessscenefx.scene.BorderlessScene;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.util.Objects;
 
 public class FileManager extends Application {
 
@@ -28,6 +30,7 @@ public class FileManager extends Application {
 
         // Configure and show the stage
         primaryStage.setTitle("File Manager");
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/logo_64.png"))));
         primaryStage.setMinWidth(400);
         primaryStage.setWidth(1000); // Set initial width to 1000
         primaryStage.setHeight(600); // Set initial height to 600
