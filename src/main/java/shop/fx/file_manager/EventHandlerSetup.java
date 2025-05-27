@@ -98,7 +98,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load open_64.png");
         }
         ImageView openIcon = new ImageView(openImage);
-        openIcon.setFitHeight(16);
+        openIcon.setFitHeight(20);
         openIcon.setPreserveRatio(true);
         openItem.setGraphic(openIcon);
 
@@ -107,7 +107,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load rename_64.png");
         }
         ImageView renameIcon = new ImageView(renameImage);
-        renameIcon.setFitHeight(16);
+        renameIcon.setFitHeight(20);
         renameIcon.setPreserveRatio(true);
         renameItem.setGraphic(renameIcon);
 
@@ -116,7 +116,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load delete_64.png");
         }
         ImageView deleteIcon = new ImageView(deleteImage);
-        deleteIcon.setFitHeight(16);
+        deleteIcon.setFitHeight(20);
         deleteIcon.setPreserveRatio(true);
         deleteItem.setGraphic(deleteIcon);
 
@@ -125,7 +125,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load copy_64.png");
         }
         ImageView copyIcon = new ImageView(copyImage);
-        copyIcon.setFitHeight(16);
+        copyIcon.setFitHeight(20);
         copyIcon.setPreserveRatio(true);
         copyItem.setGraphic(copyIcon);
 
@@ -134,7 +134,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load cut_64.png");
         }
         ImageView cutIcon = new ImageView(cutImage);
-        cutIcon.setFitHeight(16);
+        cutIcon.setFitHeight(20);
         cutIcon.setPreserveRatio(true);
         cutItem.setGraphic(cutIcon);
 
@@ -143,7 +143,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load paste_64.png");
         }
         ImageView pasteIcon = new ImageView(pasteImage);
-        pasteIcon.setFitHeight(16);
+        pasteIcon.setFitHeight(20);
         pasteIcon.setPreserveRatio(true);
         pasteItem.setGraphic(pasteIcon);
 
@@ -152,7 +152,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load new_folder_64.png");
         }
         ImageView newFolderIcon = new ImageView(newFolderImage);
-        newFolderIcon.setFitHeight(16);
+        newFolderIcon.setFitHeight(20);
         newFolderIcon.setPreserveRatio(true);
         newFolderItem.setGraphic(newFolderIcon);
 
