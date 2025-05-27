@@ -14,11 +14,13 @@ public class FileOperations {
     private final FileManagerUI ui;
     private final FileSystemUtils fileSystemUtils;
     private final FileManagerController controller;
+    private boolean isCutOperation; // Flag to distinguish between copy and cut
 
     public FileOperations(FileManagerUI ui, FileSystemUtils fileSystemUtils, FileManagerController controller) {
         this.ui = ui;
         this.fileSystemUtils = fileSystemUtils;
         this.controller = controller;
+        this.isCutOperation = false;
     }
 
     public void openItem(Path path) throws IOException {
@@ -98,6 +100,9 @@ public class FileOperations {
             } else {
                 Files.delete(selectedPath);
             }
+            if (selectedPath.equals(controller.getCutPath())) {
+                controller.setCutPath(null);
+            }
             controller.loadDirectory(controller.getCurrentPath());
         } catch (IOException e) {
             System.err.println("Error deleting: " + e.getMessage());
@@ -113,14 +118,30 @@ public class FileOperations {
             return;
         }
         controller.setCopiedPath(selectedPath);
+        controller.setCutPath(null); // Clear cut path if copying
+        isCutOperation = false;
         System.out.println("Copied path: " + selectedPath);
+    }
+
+    public void handleCut() {
+        Path selectedPath = ui.getFileListView().getSelectionModel().getSelectedItem();
+        if (selectedPath == null) {
+            System.out.println("Cut failed: No item selected");
+            controller.showErrorDialog("Error", "No file or folder selected.");
+            return;
+        }
+        controller.setCopiedPath(selectedPath);
+        controller.setCutPath(selectedPath); // Mark as cut
+        isCutOperation = true;
+        System.out.println("Cut path: " + selectedPath);
+        ui.getFileListView().refresh(); // Refresh to update icon opacity
     }
 
     public void handlePaste() {
         Path copiedPath = controller.getCopiedPath();
         if (copiedPath == null) {
-            System.out.println("Paste failed: No item copied");
-            controller.showErrorDialog("Error", "No file or folder copied.");
+            System.out.println("Paste failed: No item copied or cut");
+            controller.showErrorDialog("Error", "No file or folder copied or cut.");
             return;
         }
         if (controller.getCurrentPath() == null) {
@@ -129,17 +150,65 @@ public class FileOperations {
             return;
         }
         try {
-            System.out.println("Pasting: " + copiedPath + " to " + controller.getCurrentPath());
+            System.out.println((isCutOperation ? "Moving: " : "Copying: ") + copiedPath + " to " + controller.getCurrentPath());
             Path targetPath = controller.getCurrentPath().resolve(copiedPath.getFileName());
             if (Files.isDirectory(copiedPath)) {
                 copyDirectory(copiedPath, targetPath);
             } else {
-                Files.copy(copiedPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                if (isCutOperation) {
+                    Files.move(copiedPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                    Files.copy(copiedPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            if (isCutOperation) {
+                controller.setCopiedPath(null);
+                controller.setCutPath(null);
+                isCutOperation = false;
             }
             controller.loadDirectory(controller.getCurrentPath());
         } catch (IOException e) {
             System.err.println("Error pasting: " + e.getMessage());
             controller.showErrorDialog("Error", "Error pasting file or folder: " + e.getMessage());
+        }
+    }
+
+    public void handleNewFolder() {
+        if (controller.getCurrentPath() == null) {
+            System.out.println("New folder creation failed: No directory selected");
+            controller.showErrorDialog("Error", "No directory selected for creating a new folder.");
+            return;
+        }
+        try {
+            String baseName = "New Folder";
+            Path newFolderPath = controller.getCurrentPath().resolve(baseName);
+            int counter = 1;
+            while (Files.exists(newFolderPath)) {
+                newFolderPath = controller.getCurrentPath().resolve(baseName + " (" + counter + ")");
+                counter++;
+            }
+            Files.createDirectory(newFolderPath);
+            System.out.println("Created new folder: " + newFolderPath);
+            controller.loadDirectory(controller.getCurrentPath());
+            // Select and rename the new folder
+            int newFolderIndex = ui.getFileListView().getItems().indexOf(newFolderPath);
+            if (newFolderIndex >= 0) {
+                ui.getFileListView().getSelectionModel().select(newFolderIndex);
+                ui.getFileListView().scrollTo(newFolderIndex);
+                Platform.runLater(() -> {
+                    ListCell<Path> cell = getCellAtIndex(ui.getFileListView(), newFolderIndex);
+                    if (cell != null) {
+                        System.out.println("Starting rename for new folder at index: " + newFolderIndex);
+                        cell.startEdit();
+                    } else {
+                        System.out.println("Failed to find cell for new folder at index: " + newFolderIndex);
+                        controller.showErrorDialog("Error", "Cannot rename: New folder is not visible.");
+                    }
+                });
+            }
+        } catch (IOException e) {
+            System.err.println("Error creating new folder: " + e.getMessage());
+            controller.showErrorDialog("Error", "Error creating new folder: " + e.getMessage());
         }
     }
 

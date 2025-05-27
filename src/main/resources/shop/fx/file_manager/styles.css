@@ -410,6 +410,12 @@
 
   -fx-wrap-text: true;
 }
+/* Drive total size styling */
+.drive-total-size {
+    -fx-font-size: 12px;
+    -fx-text-fill: #b0b0b0;
+    -fx-max-width: 200;
+}
 
 /* Drive icon styling for home view */
 
@@ -491,23 +497,14 @@
 
 .context-menu {
   -fx-background-color: #303030;
-
   -fx-background-image: url("icons/grey.png");
-
   -fx-background-repeat: repeat;
-
   -fx-background-size: auto;
-
   -fx-background-radius: 8;
-
   -fx-border-color: #3d3d3d;
-
   -fx-border-width: 0.5;
-
   -fx-border-radius: 8;
-
-  -fx-padding: 8; /* Increased padding to make menu appear larger */
-
+  -fx-padding: 10;
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 2);
 }
 
@@ -515,7 +512,6 @@
 
 .context-menu .menu-item {
   -fx-background-color: transparent;
-
   -fx-background-radius: 4;
 
   -fx-text-fill: #cecece;

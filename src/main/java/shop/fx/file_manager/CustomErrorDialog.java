@@ -3,7 +3,6 @@ package shop.fx.file_manager;
 import com.catwithawand.borderlessscenefx.scene.BorderlessScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -17,7 +16,6 @@ import java.util.Objects;
 
 public class CustomErrorDialog {
     private final Stage stage;
-    private final BorderPane root;
 
     public CustomErrorDialog(Stage owner, String title, String message) {
         // Initialize undecorated stage
@@ -27,7 +25,7 @@ public class CustomErrorDialog {
         stage.setTitle(title);
 
         // Root layout
-        root = new BorderPane();
+        BorderPane root = new BorderPane();
         root.getStyleClass().add("dialog-root");
 
         // Custom header (mimics FileManagerUI header)
@@ -60,7 +58,7 @@ public class CustomErrorDialog {
         scene.setMoveControl(header); // Make header draggable
         stage.setWidth(400);
         stage.setHeight(100);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
         stage.setScene(scene);
     }
 
@@ -84,7 +82,7 @@ public class CustomErrorDialog {
         closeIcon.setPreserveRatio(true);
         closeButton.setGraphic(closeIcon);
         closeButton.getStyleClass().addAll("window-button", "close-button");
-        closeButton.setOnAction(e -> stage.close());
+        closeButton.setOnAction(_ -> stage.close());
 
         // Spacer to push close button to the right
         Region spacer = new Region();

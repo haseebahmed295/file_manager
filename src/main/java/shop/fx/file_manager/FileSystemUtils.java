@@ -82,14 +82,18 @@ public class FileSystemUtils {
             }
             driveIcon.setImage(driveImage);
 
-            // Vertical arrangement of drive name and progress bar
+            // Vertical arrangement of drive name, sizes, and progress bar
             VBox textAndProgress = new VBox(8);
             Label driveName = new Label(drive.getDisplayName());
             driveName.getStyleClass().add("drive-name");
+
+            // Total and free space labels
+            Label totalSizeLabel = new Label();
+            totalSizeLabel.getStyleClass().add("drive-total-size");
+
             ProgressBar progressBar = new ProgressBar();
             progressBar.getStyleClass().add("drive-progress");
             progressBar.setMaxWidth(160);
-            textAndProgress.getChildren().addAll(driveName, progressBar);
 
             try {
                 FileStore store = Files.getFileStore(drive.getPath());
@@ -98,10 +102,14 @@ public class FileSystemUtils {
                 long usedSpace = totalSpace - freeSpace;
                 double progress = totalSpace > 0 ? (double) usedSpace / totalSpace : 0;
                 progressBar.setProgress(progress);
+                totalSizeLabel.setText("Total: " + formatSize(totalSpace)+" | Free: "+formatSize(freeSpace));
             } catch (IOException e) {
-                System.err.println("Error calculating progress for drive: " + drive.getDisplayName());
+                System.err.println("Error calculating progress or sizes for drive: " + drive.getDisplayName());
                 progressBar.setProgress(0);
+                totalSizeLabel.setText("Total: (Error)");
             }
+
+            textAndProgress.getChildren().addAll(driveName,progressBar, totalSizeLabel);
 
             // Define column constraints
             ColumnConstraints iconCol = new ColumnConstraints(24);
@@ -131,7 +139,7 @@ public class FileSystemUtils {
             }
         } catch (AccessDeniedException e) {
             System.err.println("Access denied to: " + directory);
-            throw e; // Propagate to show dialog
+            throw e;
         }
     }
 
@@ -149,7 +157,7 @@ public class FileSystemUtils {
             }
         } catch (AccessDeniedException e) {
             System.err.println("Access denied to: " + directory);
-            throw e; // Propagate to show dialog
+            throw e;
         }
     }
 
@@ -166,14 +174,13 @@ public class FileSystemUtils {
             File drive = root.toFile();
             String name = fsv.getSystemDisplayName(drive);
             if (name == null || name.trim().isEmpty()) {
-                name = root.toString(); // Fallback to path
+                name = root.toString();
             }
-            // Format as "Name (C:\)"
             String formattedName = name;
             return formattedName;
         } catch (Exception e) {
             System.err.println("Error getting name for drive: " + root + ", error: " + e.getMessage());
-            return "Drive (" + root.toString() + ")"; // Fallback to generic name
+            return "Drive (" + root.toString() + ")";
         }
     }
 }

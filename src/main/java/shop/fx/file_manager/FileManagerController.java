@@ -1,5 +1,6 @@
 package shop.fx.file_manager;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -18,7 +19,8 @@ public class FileManagerController {
     private Path currentPath;
     private final List<Path> navigationHistory;
     private int historyIndex;
-    private Path copiedPath; // Store the path for copy-paste operations
+    private final SimpleObjectProperty<Path> copiedPathProperty; // Property for binding
+    private Path cutPath; // Track the path marked for cut
     private final Image maximizeImage;
     private final Image restoreImage;
 
@@ -27,7 +29,8 @@ public class FileManagerController {
         this.fileSystemUtils = fileSystemUtils;
         this.navigationHistory = new ArrayList<>();
         this.historyIndex = -1;
-        this.copiedPath = null;
+        this.copiedPathProperty = new SimpleObjectProperty<>(null);
+        this.cutPath = null;
         maximizeImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/maximize_64.png")));
         restoreImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/restore_64.png")));
         if (maximizeImage.isError() || restoreImage.isError()) {
@@ -37,8 +40,7 @@ public class FileManagerController {
     }
 
     private void initialize() {
-        // Initialize helper classes
-        CellFactorySetup cellFactorySetup = new CellFactorySetup(ui, fileSystemUtils , this);
+        CellFactorySetup cellFactorySetup = new CellFactorySetup(ui, fileSystemUtils, this);
         EventHandlerSetup eventHandlerSetup = new EventHandlerSetup(ui, fileSystemUtils, this);
         cellFactorySetup.setupCellFactories();
         eventHandlerSetup.setupEventHandlers();
@@ -56,6 +58,8 @@ public class FileManagerController {
         System.out.println("Drive list items: " + ui.getDriveListView().getItems().size());
         fileSystemUtils.loadDrivesInGrid(ui.getMainContent());
         currentPath = null;
+        cutPath = null; // Clear cut path when loading drives
+        setCopiedPath(null); // Clear copied path
         ui.getPathField().setText("");
         ui.getSearchField().setText("");
     }
@@ -89,11 +93,23 @@ public class FileManagerController {
     }
 
     public Path getCopiedPath() {
-        return copiedPath;
+        return copiedPathProperty.get();
     }
 
     public void setCopiedPath(Path copiedPath) {
-        this.copiedPath = copiedPath;
+        this.copiedPathProperty.set(copiedPath);
+    }
+
+    public SimpleObjectProperty<Path> copiedPathProperty() {
+        return copiedPathProperty;
+    }
+
+    public Path getCutPath() {
+        return cutPath;
+    }
+
+    public void setCutPath(Path cutPath) {
+        this.cutPath = cutPath;
     }
 
     public Image getMaximizeImage() {

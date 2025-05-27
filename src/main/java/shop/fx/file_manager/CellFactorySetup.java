@@ -83,7 +83,7 @@ public class CellFactorySetup {
                         event.consume();
                     }
                 });
-                nameField.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+                nameField.focusedProperty().addListener((_, _, isFocused) -> {
                     if (!isFocused && isEditing) {
                         System.out.println("Committing edit via focus loss for: " + getItem());
                         commitEdit(getItem());
@@ -168,6 +168,9 @@ public class CellFactorySetup {
                         extensionInfo.setText("-");
                     }
 
+                    // Set icon opacity based on cut state
+                    icon.setOpacity(controller.getCutPath() != null && controller.getCutPath().equals(item) ? 0.5 : 1.0);
+
                     if (!isEditing) {
                         content.getChildren().remove(nameField);
                         if (!content.getChildren().contains(name)) {
@@ -251,7 +254,7 @@ public class CellFactorySetup {
             }
         });
 
-        ui.getDriveListView().setCellFactory(param -> new ListCell<>() {
+        ui.getDriveListView().setCellFactory(_ -> new ListCell<>() {
             @Override
             protected void updateItem(DriveInfo item, boolean empty) {
                 super.updateItem(item, empty);

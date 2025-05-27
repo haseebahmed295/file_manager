@@ -5,18 +5,12 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import javax.swing.filechooser.FileSystemView;
-import java.io.File;
 import java.util.Objects;
 
 public class FileManager extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Set the theme
-//        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-
         // Initialize UI and controller
         FileManagerUI ui = new FileManagerUI();
         FileSystemUtils fileSystemUtils = new FileSystemUtils();
@@ -25,8 +19,8 @@ public class FileManager extends Application {
         // Set up the scene
         BorderlessScene scene = new BorderlessScene(primaryStage, StageStyle.TRANSPARENT, ui.getRoot(), Color.TRANSPARENT);
         scene.setMoveControl(ui.getHeader());
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("sidebar.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("sidebar.css")).toExternalForm());
 
         // Configure and show the stage
         primaryStage.setTitle("File Manager");

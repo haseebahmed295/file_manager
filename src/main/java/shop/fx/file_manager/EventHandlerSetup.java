@@ -1,14 +1,17 @@
 package shop.fx.file_manager;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Objects;
 
 public class EventHandlerSetup {
 
@@ -25,21 +28,21 @@ public class EventHandlerSetup {
     }
 
     public void setupEventHandlers() {
-        ui.getMinimizeButton().setOnAction(e -> {
+        ui.getMinimizeButton().setOnAction(_ -> {
             Stage stage = (Stage) ui.getRoot().getScene().getWindow();
             stage.setIconified(true);
         });
 
-        ui.getMaximizeButton().setOnAction(e -> {
+        ui.getMaximizeButton().setOnAction(_ -> {
             Stage stage = (Stage) ui.getRoot().getScene().getWindow();
             stage.setMaximized(!stage.isMaximized());
             ImageView icon = (ImageView) ui.getMaximizeButton().getGraphic();
-            icon.setImage(stage.isMaximized() ? controller.getRestoreImage() : controller.getMaximizeImage());
+            icon.setImage(stage.isMaximized() ? controller.getMaximizeImage() : null);
         });
 
-        ui.getCloseButton().setOnAction(e -> Platform.exit());
+        ui.getCloseButton().setOnAction(_ -> Platform.exit());
 
-        ui.getHomeButton().setOnAction(e -> {
+        ui.getHomeButton().setOnAction(_ -> {
             controller.loadDrives();
             controller.getNavigationHistory().clear();
             controller.setHistoryIndex(-1);
@@ -77,13 +80,87 @@ public class EventHandlerSetup {
         MenuItem renameItem = new MenuItem("Rename");
         MenuItem deleteItem = new MenuItem("Delete");
         MenuItem copyItem = new MenuItem("Copy");
+        MenuItem cutItem = new MenuItem("Cut");
         MenuItem pasteItem = new MenuItem("Paste");
+        MenuItem newFolderItem = new MenuItem("New Folder");
 
         openItem.getStyleClass().add("menu-item");
         renameItem.getStyleClass().add("menu-item");
         deleteItem.getStyleClass().add("menu-item");
         copyItem.getStyleClass().add("menu-item");
+        cutItem.getStyleClass().add("menu-item");
         pasteItem.getStyleClass().add("menu-item");
+        newFolderItem.getStyleClass().add("menu-item");
+
+        // Set icons for context menu items
+        Image openImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/open_64.png")));
+        if (openImage.isError()) {
+            System.err.println("Failed to load open_64.png");
+        }
+        ImageView openIcon = new ImageView(openImage);
+        openIcon.setFitHeight(16);
+        openIcon.setPreserveRatio(true);
+        openItem.setGraphic(openIcon);
+
+        Image renameImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/rename_64.png")));
+        if (renameImage.isError()) {
+            System.err.println("Failed to load rename_64.png");
+        }
+        ImageView renameIcon = new ImageView(renameImage);
+        renameIcon.setFitHeight(16);
+        renameIcon.setPreserveRatio(true);
+        renameItem.setGraphic(renameIcon);
+
+        Image deleteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/delete_64.png")));
+        if (deleteImage.isError()) {
+            System.err.println("Failed to load delete_64.png");
+        }
+        ImageView deleteIcon = new ImageView(deleteImage);
+        deleteIcon.setFitHeight(16);
+        deleteIcon.setPreserveRatio(true);
+        deleteItem.setGraphic(deleteIcon);
+
+        Image copyImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/copy_64.png")));
+        if (copyImage.isError()) {
+            System.err.println("Failed to load copy_64.png");
+        }
+        ImageView copyIcon = new ImageView(copyImage);
+        copyIcon.setFitHeight(16);
+        copyIcon.setPreserveRatio(true);
+        copyItem.setGraphic(copyIcon);
+
+        Image cutImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/cut_64.png")));
+        if (cutImage.isError()) {
+            System.err.println("Failed to load cut_64.png");
+        }
+        ImageView cutIcon = new ImageView(cutImage);
+        cutIcon.setFitHeight(16);
+        cutIcon.setPreserveRatio(true);
+        cutItem.setGraphic(cutIcon);
+
+        Image pasteImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/paste_64.png")));
+        if (pasteImage.isError()) {
+            System.err.println("Failed to load paste_64.png");
+        }
+        ImageView pasteIcon = new ImageView(pasteImage);
+        pasteIcon.setFitHeight(16);
+        pasteIcon.setPreserveRatio(true);
+        pasteItem.setGraphic(pasteIcon);
+
+        Image newFolderImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/new_folder_64.png")));
+        if (newFolderImage.isError()) {
+            System.err.println("Failed to load new_folder_64.png");
+        }
+        ImageView newFolderIcon = new ImageView(newFolderImage);
+        newFolderIcon.setFitHeight(16);
+        newFolderIcon.setPreserveRatio(true);
+        newFolderItem.setGraphic(newFolderIcon);
+
+        // Bind Paste item state to clipboard content
+        pasteItem.disableProperty().bind(Bindings.isNull(controller.copiedPathProperty()));
+        pasteIcon.opacityProperty().bind(Bindings.when(pasteItem.disableProperty())
+                .then(0.5)
+                .otherwise(1.0));
 
         openItem.setOnAction(_ -> {
             Path selectedPath = ui.getFileListView().getSelectionModel().getSelectedItem();
@@ -112,11 +189,13 @@ public class EventHandlerSetup {
             }
         });
 
-        deleteItem.setOnAction(e -> fileOperations.handleDelete());
-        copyItem.setOnAction(e -> fileOperations.handleCopy());
-        pasteItem.setOnAction(e -> fileOperations.handlePaste());
+        deleteItem.setOnAction(_ -> fileOperations.handleDelete());
+        copyItem.setOnAction(_ -> fileOperations.handleCopy());
+        cutItem.setOnAction(_ -> fileOperations.handleCut());
+        pasteItem.setOnAction(_ -> fileOperations.handlePaste());
+        newFolderItem.setOnAction(_ -> fileOperations.handleNewFolder());
 
-        contextMenu.getItems().addAll(openItem, renameItem, deleteItem, copyItem, pasteItem);
+        contextMenu.getItems().addAll(openItem, renameItem, deleteItem, copyItem, cutItem, pasteItem, newFolderItem);
         ui.getFileListView().setContextMenu(contextMenu);
 
         ui.getFileListView().setOnMouseClicked(event -> {
@@ -126,7 +205,7 @@ public class EventHandlerSetup {
                     try {
                         if (Files.isDirectory(selectedPath)) {
                             while (controller.getNavigationHistory().size() > controller.getHistoryIndex() + 1) {
-                                controller.getNavigationHistory().remove(controller.getNavigationHistory().size() - 1);
+                                controller.getNavigationHistory().removeLast();
                             }
                             controller.getNavigationHistory().add(selectedPath);
                             controller.setHistoryIndex(controller.getHistoryIndex() + 1);
@@ -136,7 +215,7 @@ public class EventHandlerSetup {
                         }
                     } catch (AccessDeniedException e) {
                         System.err.println("Caught AccessDeniedException for: " + selectedPath);
-                        controller.showErrorDialog("Access Denied", "Access Denied: Cannot open " + selectedPath.toString());
+                        controller.showErrorDialog("Access Denied", "Access Denied: Cannot open " + selectedPath);
                     } catch (IOException e) {
                         System.err.println("IOException accessing: " + selectedPath + ", Message: " + e.getMessage());
                         controller.showErrorDialog("Error", "Error accessing: " + e.getMessage());
@@ -145,12 +224,12 @@ public class EventHandlerSetup {
             }
         });
 
-        ui.getDriveListView().setOnMouseClicked(event -> {
+        ui.getDriveListView().setOnMouseClicked(_ -> {
             DriveInfo selectedDrive = ui.getDriveListView().getSelectionModel().getSelectedItem();
             if (selectedDrive != null) {
                 try {
                     while (controller.getNavigationHistory().size() > controller.getHistoryIndex() + 1) {
-                        controller.getNavigationHistory().remove(controller.getNavigationHistory().size() - 1);
+                        controller.getNavigationHistory().removeLast();
                     }
                     controller.getNavigationHistory().add(selectedDrive.getPath());
                     controller.setHistoryIndex(controller.getHistoryIndex() + 1);
@@ -178,7 +257,7 @@ public class EventHandlerSetup {
                     if (selectedDrive != null) {
                         try {
                             while (controller.getNavigationHistory().size() > controller.getHistoryIndex() + 1) {
-                                controller.getNavigationHistory().remove(controller.getNavigationHistory().size() - 1);
+                                controller.getNavigationHistory().removeLast();
                             }
                             controller.getNavigationHistory().add(selectedDrive.getPath());
                             controller.setHistoryIndex(controller.getHistoryIndex() + 1);
@@ -195,7 +274,7 @@ public class EventHandlerSetup {
             }
         });
 
-        ui.getSearchField().textProperty().addListener((obs, oldValue, newValue) -> {
+        ui.getSearchField().textProperty().addListener((_, oldValue, newValue) -> {
             if (controller.getCurrentPath() != null) {
                 try {
                     ui.getFileListView().getItems().clear();

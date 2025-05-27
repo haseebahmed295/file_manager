@@ -24,3 +24,26 @@ public class DriveInfo {
         return displayName;
     }
 }
+class DriveData {
+    private final DriveInfo driveInfo;
+    private final String totalSize;
+    private final String freeSize;
+
+    public DriveData(DriveInfo driveInfo, String totalSize, String freeSize) {
+        this.driveInfo = driveInfo;
+        this.totalSize = totalSize;
+        this.freeSize = freeSize;
+    }
+
+    public DriveInfo getDriveInfo() {
+        return driveInfo;
+    }
+
+    public String getTotalSize() {
+        return totalSize;
+    }
+
+    public String getFreeSize() {
+        return freeSize;
+    }
+}

@@ -23,7 +23,6 @@ public class FileManagerUI {
     private final Button minimizeButton;
     private final Button maximizeButton;
     private final Button closeButton;
-    private final HBox dragBar;
     private final BorderPane root;
     private final VBox header;
     private final TextField pathField;
@@ -141,7 +140,7 @@ public class FileManagerUI {
         buttonContainer.setAlignment(Pos.TOP_RIGHT);
 
         // Draggable bar at the top
-        dragBar = new HBox();
+        HBox dragBar = new HBox();
         dragBar.getStyleClass().add("drag-bar");
         dragBar.setMinHeight(10);
         dragBar.setMaxSize(Double.MAX_VALUE, 10);
@@ -151,7 +150,7 @@ public class FileManagerUI {
         sidebar.getStyleClass().add("sidebar");
         sidebar.setMinWidth(200);
         sidebar.setPrefWidth(200);
-        sidebar.setMaxWidth(200);
+        sidebar.setMaxWidth(600);
 
         // Header layout with two rows
         HBox topRow = new HBox(dragBar, new Region(), buttonContainer);
@@ -189,9 +188,7 @@ public class FileManagerUI {
         splitPane.setDividerPositions(0.25);
         splitPane.getStyleClass().add("root-pane");
         // Lock the divider position to prevent sidebar resizing
-        splitPane.getDividers().getFirst().positionProperty().addListener((obs, oldVal, newVal) -> {
-            splitPane.setDividerPositions(200.0 / splitPane.getWidth());
-        });
+        splitPane.getDividers().getFirst().positionProperty().addListener((_, _, _) -> splitPane.setDividerPositions(200.0 / splitPane.getWidth()));
 
         // Root layout with split pane in center
         root = new BorderPane();
@@ -233,10 +230,6 @@ public class FileManagerUI {
 
     public Button getCloseButton() {
         return closeButton;
-    }
-
-    public HBox getDragBar() {
-        return dragBar;
     }
 
     public BorderPane getRoot() {
