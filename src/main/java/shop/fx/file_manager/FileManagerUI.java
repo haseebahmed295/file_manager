@@ -1,5 +1,7 @@
 package shop.fx.file_manager;
 
+import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -17,6 +19,7 @@ public class FileManagerUI {
 
     private final ListView<Path> fileListView;
     private final ListView<DriveInfo> driveListView;
+    private final ListView<Path> pinnedFoldersListView; // New ListView for pinned folders
     private final Button homeButton;
     private final Button backButton;
     private final Button forwardButton;
@@ -37,6 +40,8 @@ public class FileManagerUI {
         driveListView = new ListView<>();
         driveListView.getStyleClass().add("drive-list-view");
 
+        pinnedFoldersListView = new ListView<>(); // Initialize pinned folders ListView
+        pinnedFoldersListView.getStyleClass().add("pinned-folders-list-view");
 
         // Load header logo
         Image headerLogoImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/logo_64.png")));
@@ -100,6 +105,9 @@ public class FileManagerUI {
         Label drivesLabel = new Label("Drives");
         drivesLabel.getStyleClass().add("drives-label");
 
+        Label pinnedFoldersLabel = new Label("Pinned Folders"); // Label for pinned folders
+        pinnedFoldersLabel.getStyleClass().add("pinned-folders-label");
+
         // Window control buttons with custom icons
         minimizeButton = new Button();
         Image minimizeImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/minus_64.png")));
@@ -145,12 +153,24 @@ public class FileManagerUI {
         dragBar.setMinHeight(10);
         dragBar.setMaxSize(Double.MAX_VALUE, 10);
 
-        // Sidebar layout
-        VBox sidebar = new VBox(10, headerLogoView, searchField, drivesLabel, driveListView);
+        // Sidebar layout with pinned folders
+
+        pinnedFoldersListView.getItems().addListener((ListChangeListener<? super Path>) change -> {
+            double itemHeight = 80; // Approximate height of each cell
+            int itemCount = pinnedFoldersListView.getItems().size();
+            if (itemCount > 0){
+            pinnedFoldersListView.setPrefHeight(itemCount * itemHeight);}
+            else {
+                pinnedFoldersListView.setPrefHeight(10);
+            }
+        });
+
+        VBox sidebar = new VBox(10, headerLogoView, searchField,pinnedFoldersLabel,pinnedFoldersListView , drivesLabel, driveListView);
         sidebar.getStyleClass().add("sidebar");
         sidebar.setMinWidth(200);
         sidebar.setPrefWidth(200);
         sidebar.setMaxWidth(600);
+
 
         // Header layout with two rows
         HBox topRow = new HBox(dragBar, new Region(), buttonContainer);
@@ -206,6 +226,10 @@ public class FileManagerUI {
 
     public ListView<DriveInfo> getDriveListView() {
         return driveListView;
+    }
+
+    public ListView<Path> getPinnedFoldersListView() { // Getter for pinned folders ListView
+        return pinnedFoldersListView;
     }
 
     public Button getHomeButton() {

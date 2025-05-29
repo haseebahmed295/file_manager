@@ -2,11 +2,14 @@ package shop.fx.file_manager;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -37,7 +40,7 @@ public class EventHandlerSetup {
             Stage stage = (Stage) ui.getRoot().getScene().getWindow();
             stage.setMaximized(!stage.isMaximized());
             ImageView icon = (ImageView) ui.getMaximizeButton().getGraphic();
-            icon.setImage(stage.isMaximized() ? controller.getMaximizeImage() : null);
+            icon.setImage(stage.isMaximized() ? controller.getRestoreImage():controller.getMaximizeImage());
         });
 
         ui.getCloseButton().setOnAction(_ -> Platform.exit());
@@ -83,6 +86,7 @@ public class EventHandlerSetup {
         MenuItem cutItem = new MenuItem("Cut");
         MenuItem pasteItem = new MenuItem("Paste");
         MenuItem newFolderItem = new MenuItem("New Folder");
+        MenuItem pinFolderItem = new MenuItem("Pin Folder");
 
         openItem.getStyleClass().add("menu-item");
         renameItem.getStyleClass().add("menu-item");
@@ -91,6 +95,7 @@ public class EventHandlerSetup {
         cutItem.getStyleClass().add("menu-item");
         pasteItem.getStyleClass().add("menu-item");
         newFolderItem.getStyleClass().add("menu-item");
+        pinFolderItem.getStyleClass().add("menu-item");
 
         // Set icons for context menu items
         Image openImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/open_64.png")));
@@ -98,7 +103,7 @@ public class EventHandlerSetup {
             System.err.println("Failed to load open_64.png");
         }
         ImageView openIcon = new ImageView(openImage);
-        openIcon.setFitHeight(20);
+        openIcon.setFitHeight(24);
         openIcon.setPreserveRatio(true);
         openItem.setGraphic(openIcon);
 
@@ -156,11 +161,39 @@ public class EventHandlerSetup {
         newFolderIcon.setPreserveRatio(true);
         newFolderItem.setGraphic(newFolderIcon);
 
+        Image pinImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/pin_64.png")));
+        if (pinImage.isError()) {
+            System.err.println("Failed to load pin_64.png");
+        }
+        ImageView pinIcon = new ImageView(pinImage);
+        pinIcon.setFitHeight(20);
+        pinIcon.setPreserveRatio(true);
+        pinFolderItem.setGraphic(pinIcon);
+
+        Image unpinImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/unpin_64.png")));
+        if (unpinImage.isError()) {
+            System.err.println("Failed to load unpin_64.png");
+        }
+        ImageView unpinIcon = new ImageView(unpinImage);
+        unpinIcon.setFitHeight(20);
+        unpinIcon.setPreserveRatio(true);
+
         // Bind Paste item state to clipboard content
         pasteItem.disableProperty().bind(Bindings.isNull(controller.copiedPathProperty()));
         pasteIcon.opacityProperty().bind(Bindings.when(pasteItem.disableProperty())
                 .then(0.5)
                 .otherwise(1.0));
+
+        // Bind Pin/Unpin item visibility based on selection
+        pinFolderItem.visibleProperty().bind(Bindings.createBooleanBinding(() -> {
+            Path selectedPath = ui.getFileListView().getSelectionModel().getSelectedItem();
+            try {
+                return selectedPath != null && Files.exists(selectedPath) && Files.isDirectory(selectedPath);
+            } catch (Exception e) {
+                System.err.println("Error checking if path is directory: " + selectedPath + ", Message: " + e.getMessage());
+                return false;
+            }
+        }, ui.getFileListView().getSelectionModel().selectedItemProperty()));
 
         openItem.setOnAction(_ -> {
             Path selectedPath = ui.getFileListView().getSelectionModel().getSelectedItem();
@@ -195,8 +228,53 @@ public class EventHandlerSetup {
         pasteItem.setOnAction(_ -> fileOperations.handlePaste());
         newFolderItem.setOnAction(_ -> fileOperations.handleNewFolder());
 
-        contextMenu.getItems().addAll(openItem, renameItem, deleteItem, copyItem, cutItem, pasteItem, newFolderItem);
+        pinFolderItem.setOnAction(_ -> {
+            Path selectedPath = ui.getFileListView().getSelectionModel().getSelectedItem();
+            if (selectedPath != null) {
+                fileOperations.handlePinFolder(selectedPath);
+            }
+        });
+
+        contextMenu.getItems().addAll(openItem, renameItem, deleteItem, copyItem, cutItem, pasteItem, newFolderItem, pinFolderItem);
         ui.getFileListView().setContextMenu(contextMenu);
+
+        // Context menu for pinnedFoldersListView
+        ContextMenu pinnedContextMenu = new ContextMenu();
+        MenuItem pinnedOpenItem = new MenuItem("Open");
+        MenuItem pinnedUnpinItem = new MenuItem("Unpin Folder");
+        pinnedOpenItem.getStyleClass().add("menu-item");
+        pinnedUnpinItem.getStyleClass().add("menu-item");
+
+        ImageView PinOpenIcon = new ImageView(openImage);
+        PinOpenIcon.setFitHeight(20);
+        PinOpenIcon.setPreserveRatio(true);
+        pinnedOpenItem.setGraphic(PinOpenIcon);
+        pinnedUnpinItem.setGraphic(unpinIcon);
+        pinnedContextMenu.getItems().addAll(pinnedOpenItem, pinnedUnpinItem);
+
+        pinnedOpenItem.setOnAction(_ -> {
+            Path selectedPath = ui.getPinnedFoldersListView().getSelectionModel().getSelectedItem();
+            if (selectedPath != null) {
+                try {
+                    fileOperations.openItem(selectedPath);
+                } catch (IOException e) {
+                    System.err.println("Error opening item: " + e.getMessage());
+                    controller.showErrorDialog("Error", "Error opening item: " + e.getMessage());
+                }
+            } else {
+                System.out.println("Open failed: No item selected");
+                controller.showErrorDialog("Error", "No file or folder selected.");
+            }
+        });
+
+        pinnedUnpinItem.setOnAction(_ -> {
+            Path selectedPath = ui.getPinnedFoldersListView().getSelectionModel().getSelectedItem();
+            if (selectedPath != null) {
+                fileOperations.handleUnpinFolder(selectedPath);
+            }
+        });
+
+        ui.getPinnedFoldersListView().setContextMenu(pinnedContextMenu);
 
         ui.getFileListView().setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -219,6 +297,25 @@ public class EventHandlerSetup {
                     } catch (IOException e) {
                         System.err.println("IOException accessing: " + selectedPath + ", Message: " + e.getMessage());
                         controller.showErrorDialog("Error", "Error accessing: " + e.getMessage());
+                    }
+                }
+            }
+        });
+
+        ui.getPinnedFoldersListView().setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Path selectedPath = ui.getPinnedFoldersListView().getSelectionModel().getSelectedItem();
+                if (selectedPath != null) {
+                    try {
+                        while (controller.getNavigationHistory().size() > controller.getHistoryIndex() + 1) {
+                            controller.getNavigationHistory().removeLast();
+                        }
+                        controller.getNavigationHistory().add(selectedPath);
+                        controller.setHistoryIndex(controller.getHistoryIndex() + 1);
+                        controller.loadDirectory(selectedPath);
+                    } catch (IOException e) {
+                        System.err.println("Error opening pinned folder: " + e.getMessage());
+                        controller.showErrorDialog("Error", "Error opening pinned folder: " + e.getMessage());
                     }
                 }
             }
@@ -282,6 +379,37 @@ public class EventHandlerSetup {
                 } catch (IOException e) {
                     System.err.println("Error searching directory: " + e.getMessage());
                     controller.showErrorDialog("Error", "Error searching directory: " + e.getMessage());
+                }
+            }
+        });
+
+        // Setup cell factory for pinned folders
+        ui.getPinnedFoldersListView().setCellFactory(p -> new ListCell<>() {
+            @Override
+            protected void updateItem(Path item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    GridPane cellContent = new GridPane();
+                    cellContent.getStyleClass().add("pinned-folder-cell-content");
+
+                    ImageView folderIcon = new ImageView(new Image(
+                            Objects.requireNonNull(getClass().getResourceAsStream("icons/folder_64.png"))
+                    ));
+                    folderIcon.setFitHeight(16);
+                    folderIcon.setPreserveRatio(true);
+
+                    Label folderName = new Label(item.getFileName().toString());
+                    folderName.getStyleClass().add("pinned-folder-name");
+
+                    cellContent.setHgap(8);
+                    cellContent.add(folderIcon, 0, 0);
+                    cellContent.add(folderName, 1, 0);
+
+                    setGraphic(cellContent);
+                    setText(null);
                 }
             }
         });

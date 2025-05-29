@@ -14,7 +14,7 @@ public class FileOperations {
     private final FileManagerUI ui;
     private final FileSystemUtils fileSystemUtils;
     private final FileManagerController controller;
-    private boolean isCutOperation; // Flag to distinguish between copy and cut
+    private boolean isCutOperation;
 
     public FileOperations(FileManagerUI ui, FileSystemUtils fileSystemUtils, FileManagerController controller) {
         this.ui = ui;
@@ -103,6 +103,9 @@ public class FileOperations {
             if (selectedPath.equals(controller.getCutPath())) {
                 controller.setCutPath(null);
             }
+            if (controller.isFolderPinned(selectedPath)) {
+                controller.unpinFolder(selectedPath);
+            }
             controller.loadDirectory(controller.getCurrentPath());
         } catch (IOException e) {
             System.err.println("Error deleting: " + e.getMessage());
@@ -118,7 +121,7 @@ public class FileOperations {
             return;
         }
         controller.setCopiedPath(selectedPath);
-        controller.setCutPath(null); // Clear cut path if copying
+        controller.setCutPath(null);
         isCutOperation = false;
         System.out.println("Copied path: " + selectedPath);
     }
@@ -131,10 +134,10 @@ public class FileOperations {
             return;
         }
         controller.setCopiedPath(selectedPath);
-        controller.setCutPath(selectedPath); // Mark as cut
+        controller.setCutPath(selectedPath);
         isCutOperation = true;
         System.out.println("Cut path: " + selectedPath);
-        ui.getFileListView().refresh(); // Refresh to update icon opacity
+        ui.getFileListView().refresh();
     }
 
     public void handlePaste() {
@@ -210,6 +213,18 @@ public class FileOperations {
             System.err.println("Error creating new folder: " + e.getMessage());
             controller.showErrorDialog("Error", "Error creating new folder: " + e.getMessage());
         }
+    }
+
+    public void handlePinFolder(Path folder) {
+        if (Files.isDirectory(folder)) {
+            controller.pinFolder(folder);
+        } else {
+            controller.showErrorDialog("Error", "Selected item is not a folder.");
+        }
+    }
+
+    public void handleUnpinFolder(Path folder) {
+        controller.unpinFolder(folder);
     }
 
     private void copyDirectory(Path source, Path target) throws IOException {

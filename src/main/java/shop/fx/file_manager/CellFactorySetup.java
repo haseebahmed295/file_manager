@@ -114,7 +114,7 @@ public class CellFactorySetup {
                     }
 
                     try {
-                        String extension = "-";
+                        String extension = "";
                         if (isDirectory) {
                             Image folderImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/folder_64.png")));
                             if (folderImage.isError()) {
@@ -123,7 +123,7 @@ public class CellFactorySetup {
                             icon.setImage(folderImage);
                             name.setText(fileName);
                             nameField.setText(fileName);
-                            sizeInfo.setText("-");
+                            sizeInfo.setText("");
                         } else {
                             Image fileImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/file_64.png")));
                             if (fileImage.isError()) {
@@ -154,7 +154,7 @@ public class CellFactorySetup {
                         name.setText(fileName);
                         nameField.setText(fileName);
                         sizeInfo.setText("(Access Denied)");
-                        extensionInfo.setText("-");
+                        extensionInfo.setText("");
                     } catch (IOException e) {
                         System.err.println("IOException for: " + item + ", Message: " + e.getMessage());
                         Image lockedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icons/lock_64.png")));
@@ -165,7 +165,7 @@ public class CellFactorySetup {
                         name.setText(fileName);
                         nameField.setText(fileName);
                         sizeInfo.setText("(Error)");
-                        extensionInfo.setText("-");
+                        extensionInfo.setText("");
                     }
 
                     // Set icon opacity based on cut state

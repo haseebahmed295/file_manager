@@ -1,27 +1,63 @@
 /* Sidebar styling */
-
 .sidebar {
     -fx-background-color: #303030;
-
     -fx-background-image: url("icons/grey.png");
-
     -fx-background-repeat: repeat;
-
     -fx-background-size: auto;
-
     -fx-min-width: 150;
-
     -fx-pref-width: 200;
-
     -fx-max-width: 400;
-
     -fx-border-color: transparent;
-
     -fx-border-width: 1 0 0 1;
-
     -fx-padding: 10 15 0 15;
-
     -fx-background-radius: 8 0 0 8;
+}
+
+/* Pinned folders list view styling */
+.pinned-folders-list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 5;
+    -fx-fit-to-width: true;
+}
+
+.pinned-folders-list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5 0 5 0;
+    -fx-text-fill: #ffffff;
+}
+
+.pinned-folders-list-view .list-cell:selected {
+    -fx-background-radius: 5;
+    -fx-background-color: rgba(79, 78, 78, 0.3);
+    -fx-text-fill: #ffffff;
+}
+
+.pinned-folders-list-view .list-cell:hover {
+    -fx-background-radius: 5;
+    -fx-background-color: rgba(79, 78, 78, 0.3);
+    -fx-cursor: hand;
+}
+
+.pinned-folders-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 0 5 10;
+}
+
+.pinned-folder-cell-content {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 5;
+}
+
+.pinned-folder-name {
+    -fx-text-fill: #ffffff;
+}
+
+.folder-icon {
+    -fx-image: url("icons/folder_64.png");
 }
 
 .sidebar .scroll-bar {
@@ -29,141 +65,86 @@
 }
 
 /* Drives label styling */
-
 .drives-label {
     -fx-font-size: 14px;
-
     -fx-font-weight: bold;
-
     -fx-text-fill: #f7f7f7;
-
     -fx-padding: 10 0 -5 0;
 }
 
 /* Drive list view styling */
-
 .drive-list-view {
     -fx-background-color: transparent;
-
     -fx-border-color: transparent;
-
-    -fx-padding: 0 0 0 0;
-
+    -fx-padding: 0;
     -fx-hbar-policy: never;
+    -fx-fit-to-width: true;
 }
-
-/* Drive list cell styling */
 
 .drive-list-view .list-cell {
     -fx-padding: 10 0 0 0;
-
     -fx-background-color: transparent;
-
     -fx-max-width: 180;
-
     -fx-effect: none;
 }
 
-/* Drive cell content (HBox) */
-
 .drive-list-view .drive-cell-content {
     -fx-padding: 5;
-
     -fx-background-color: transparent;
-
     -fx-background-radius: 5;
-
     -fx-max-width: 180;
-
     -fx-border-width: 2;
-
     -fx-alignment: center-left;
 }
 
 .drive-list-view .drive-cell-content:hover {
     -fx-background-color: rgba(79, 78, 78, 0.5);
-
     -fx-background-radius: 5;
-
     -fx-cursor: hand;
 }
 
-/* Drive name styling */
-
 .drive-list-view .drive-name {
     -fx-font-size: 14px;
-
-    -fx-fill: #606060;
-
+    -fx-text-fill: #ffffff;
     -fx-max-width: 150;
-    /* Adjusted to fit within cell */
-
     -fx-wrap-text: true;
-    /* Enable text wrapping */
 }
 
-/* Drive icon styling */
-
 .drive-list-view .drive-icon {
-    -fx-fit-to-height: 16px !important;
-
+    -fx-fit-height: 16px;
     -fx-preserve-ratio: true;
-
     -fx-max-width: 16px;
 }
 
-/* Drive progress bar styling */
-
 .drive-progress {
     -fx-pref-height: 5px;
-
     -fx-accent: #aaaaaa;
-
     -fx-max-width: 160;
-
     -fx-background-insets: 0;
 }
 
 .search-field {
     -fx-background-color: #2d2d2d;
-
     -fx-text-fill: #cecece;
-
     -fx-font-size: 14px;
-
     -fx-padding: 4 20 4 10;
-
     -fx-background-radius: 5;
-
     -fx-border-color: #3d3d3d;
-
     -fx-border-width: 0.5;
-
     -fx-border-radius: 5;
-
     -fx-prompt-text-fill: #666666;
-
     -fx-pref-height: 32;
 }
 
-/* Progress bar filled portion */
-
 .drive-progress .bar {
     -fx-pref-height: 5px;
-
     -fx-background-insets: 0;
-
     -fx-background-radius: 3px;
 }
 
-/* Progress bar background track */
-
 .drive-progress .track {
     -fx-pref-height: 5px;
-
     -fx-background-color: #454545;
-
     -fx-background-insets: 0;
-
     -fx-background-radius: 3px;
 }

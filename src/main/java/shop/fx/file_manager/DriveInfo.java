@@ -1,7 +1,5 @@
 package shop.fx.file_manager;
-
 import java.nio.file.Path;
-
 public class DriveInfo {
     private final Path path;
     private final String displayName;
