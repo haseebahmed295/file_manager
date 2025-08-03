@@ -1,4 +1,4 @@
-A javafx based file exploror with a modren drak design
+A javafx based file exploror with a modren dark design
 
 ![Preview](example/Preview.png)
 ![Preview2](example/Preview_1.png)
